@@ -1,19 +1,18 @@
 <?php
 /**
- * Plugin Name: Share Cart URL for WooCommerce
+ * Plugin Name: Share Cart for WooCommerce
  * Description: Share WooCommerce Cart URL to the Customer.
  * Version: 1.0
  * Author: Nitya Saha
  * Author URI: https://profiles.wordpress.org/nityasaha/
- * Text Domain: share-cart-url-for-woocommerce
+ * Text Domain: share-cart-for-woocommerce
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  *
- * Note: Make sure a folder named "languages" exists in your plugin directory, or update the Domain Path header.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    die( esc_html__( "No direct access!", 'share-cart-url-for-woocommerce' ) );
+    die( esc_html__( "No direct access!", 'share-cart-for-woocommerce' ) );
 }
 
 /**
@@ -25,7 +24,7 @@ function scurl_plugin_activation() {
     // Check if WooCommerce is active.
     if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
         deactivate_plugins( plugin_basename( __FILE__ ) );
-        wp_die( esc_html__( 'This plugin requires WooCommerce to be installed and active.', 'share-cart-url-for-woocommerce' ) );
+        wp_die( esc_html__( 'This plugin requires WooCommerce to be installed and active.', 'share-cart-for-woocommerce' ) );
     }
 }
 register_activation_hook( __FILE__, 'scurl_plugin_activation' );
@@ -67,7 +66,7 @@ if ( ! class_exists( 'SCURL_Main' ) ) {
          * @return array
          */
         public function insert_view_logs_link( $links ) {
-            $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=share_cart_url' ) ) . '">' . esc_html__( 'Settings', 'share-cart-url-for-woocommerce' ) . '</a>';
+            $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=share_cart_url' ) ) . '">' . esc_html__( 'Settings', 'share-cart-for-woocommerce' ) . '</a>';
             array_unshift( $links, $settings_link );
             return $links;
         }

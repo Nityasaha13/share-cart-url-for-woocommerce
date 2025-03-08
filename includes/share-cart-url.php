@@ -50,7 +50,7 @@ if ( ! class_exists( 'Share_Cart_URL' ) ) {
 
         public static function scurl_render_share_cart_interface() {
             ?>
-            <button id="share-cart-btn"><?php esc_html_e( 'Share this cart', 'share-cart-url-for-woocommerce' ); ?></button>
+            <button id="share-cart-btn"><?php esc_html_e( 'Share this cart', 'share-cart-for-woocommerce' ); ?></button>
             <div id="share-cart-url"></div>
             <script>
             jQuery(document).ready(function($) {
@@ -61,7 +61,7 @@ if ( ! class_exists( 'Share_Cart_URL' ) ) {
                             var shareUrl = response.data.url;
                             if (navigator.clipboard && window.isSecureContext) {
                                 navigator.clipboard.writeText(shareUrl).then(function() {
-                                    $('#share-cart-url').html('<p><?php echo esc_html__('Link copied to clipboard:', 'share-cart-url-for-woocommerce'); ?> ' + shareUrl + '</p>');
+                                    $('#share-cart-url').html('<p><?php echo esc_html__('Link copied to clipboard:', 'share-cart-for-woocommerce'); ?> ' + shareUrl + '</p>');
                                     $('#share-cart-btn').hide();
                                 });
                             } else {
@@ -70,7 +70,7 @@ if ( ! class_exists( 'Share_Cart_URL' ) ) {
                                 tempInput.val(shareUrl).select();
                                 document.execCommand("copy");
                                 tempInput.remove();
-                                $('#share-cart-url').html('<span><?php echo esc_html__('Link copied to clipboard - ', 'share-cart-url-for-woocommerce'); ?> ' + shareUrl + '</span>');
+                                $('#share-cart-url').html('<span><?php echo esc_html__('Link copied to clipboard - ', 'share-cart-for-woocommerce'); ?> ' + shareUrl + '</span>');
                                 $('#share-cart-btn').hide();
                                 $('#share-cart-url').css({
                                     'margin-bottom': '10px',

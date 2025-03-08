@@ -1,4 +1,4 @@
-=== Share Cart URL for WooCommerce ===
+=== Share Cart for WooCommerce ===
 Contributors: nityasaha
 Tags: woocommerce, cart, share, shopping cart, share-cart
 Requires at least: 5.0

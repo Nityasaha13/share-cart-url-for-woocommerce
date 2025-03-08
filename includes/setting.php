@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-    die( esc_html__( "No direct access!", 'share-cart-url-for-woocommerce' ) );
+    die( esc_html__( "No direct access!", 'share-cart-for-woocommerce' ) );
 }
 
 if ( ! class_exists( 'SCURL_Settings' ) ) {
@@ -23,7 +23,7 @@ if ( ! class_exists( 'SCURL_Settings' ) ) {
          * @return array
          */
         public function add_settings_tab( $settings_tabs ) {
-            $settings_tabs['share_cart_url'] = esc_html__( 'Share Cart', 'share-cart-url-for-woocommerce' );
+            $settings_tabs['share_cart_url'] = esc_html__( 'Share Cart', 'share-cart-for-woocommerce' );
             return $settings_tabs;
         }
 
@@ -49,27 +49,27 @@ if ( ! class_exists( 'SCURL_Settings' ) ) {
         public function get_settings() {
             $settings = array(
                 'section_title' => array(
-                    'name' => esc_html__( 'Share Cart Button Settings', 'share-cart-url-for-woocommerce' ),
+                    'name' => esc_html__( 'Share Cart Button Settings', 'share-cart-for-woocommerce' ),
                     'type' => 'title',
-                    'desc' => esc_html__( 'Configure the position of the share cart button on the cart page.', 'share-cart-url-for-woocommerce' ),
+                    'desc' => esc_html__( 'Configure the position of the share cart button on the cart page.', 'share-cart-for-woocommerce' ),
                     'id'   => 'scurl_settings_section_title'
                 ),
                 'button_position' => array(
-                    'name'    => esc_html__( 'Button Position', 'share-cart-url-for-woocommerce' ),
+                    'name'    => esc_html__( 'Button Position', 'share-cart-for-woocommerce' ),
                     'type'    => 'select',
                     'options' => array(
-                        'woocommerce_before_cart_table'            => esc_html__( 'Before Cart Table', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_before_cart_contents'           => esc_html__( 'Before Cart Contents', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_after_cart'                     => esc_html__( 'After Cart', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_before_cart_totals'             => esc_html__( 'Before Cart Totals', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_after_cart_totals'              => esc_html__( 'After Cart Totals', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_proceed_to_checkout'            => esc_html__( 'Proceed to Checkout', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_cart_totals_after_order_total'  => esc_html__( 'Cart Totals After Order Total', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_cart_totals_before_order_total' => esc_html__( 'Cart Totals Before Order Total', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_cart_totals_after_shipping'     => esc_html__( 'Cart Totals After Shipping', 'share-cart-url-for-woocommerce' ),
-                        'woocommerce_cart_coupon'                    => esc_html__( 'Cart Coupon', 'share-cart-url-for-woocommerce' ),
+                        'woocommerce_before_cart_table'            => esc_html__( 'Before Cart Table', 'share-cart-for-woocommerce' ),
+                        'woocommerce_before_cart_contents'           => esc_html__( 'Before Cart Contents', 'share-cart-for-woocommerce' ),
+                        'woocommerce_after_cart'                     => esc_html__( 'After Cart', 'share-cart-for-woocommerce' ),
+                        'woocommerce_before_cart_totals'             => esc_html__( 'Before Cart Totals', 'share-cart-for-woocommerce' ),
+                        'woocommerce_after_cart_totals'              => esc_html__( 'After Cart Totals', 'share-cart-for-woocommerce' ),
+                        'woocommerce_proceed_to_checkout'            => esc_html__( 'Proceed to Checkout', 'share-cart-for-woocommerce' ),
+                        'woocommerce_cart_totals_after_order_total'  => esc_html__( 'Cart Totals After Order Total', 'share-cart-for-woocommerce' ),
+                        'woocommerce_cart_totals_before_order_total' => esc_html__( 'Cart Totals Before Order Total', 'share-cart-for-woocommerce' ),
+                        'woocommerce_cart_totals_after_shipping'     => esc_html__( 'Cart Totals After Shipping', 'share-cart-for-woocommerce' ),
+                        'woocommerce_cart_coupon'                    => esc_html__( 'Cart Coupon', 'share-cart-for-woocommerce' ),
                     ),
-                    'desc'    => esc_html__( 'Select the hook position where the share cart button will appear on the cart page.', 'share-cart-url-for-woocommerce' ),
+                    'desc'    => esc_html__( 'Select the hook position where the share cart button will appear on the cart page.', 'share-cart-for-woocommerce' ),
                     'id'      => 'scurl_button_position'
                 ),
                 'section_end' => array(
