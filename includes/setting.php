@@ -68,6 +68,7 @@ if ( ! class_exists( 'SCURL_Settings' ) ) {
                         'woocommerce_cart_totals_before_order_total' => esc_html__( 'Cart Totals Before Order Total', 'share-cart-for-woocommerce' ),
                         'woocommerce_cart_totals_after_shipping'     => esc_html__( 'Cart Totals After Shipping', 'share-cart-for-woocommerce' ),
                         'woocommerce_cart_coupon'                    => esc_html__( 'Cart Coupon', 'share-cart-for-woocommerce' ),
+                        'hide_from_cart_page'                    => esc_html__( 'Hide', 'share-cart-for-woocommerce' ),
                     ),
                     'desc'    => esc_html__( 'Select the hook position where the share cart button will appear on the cart page.', 'share-cart-for-woocommerce' ),
                     'id'      => 'scurl_button_position'

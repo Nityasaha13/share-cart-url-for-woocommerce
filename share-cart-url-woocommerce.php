@@ -6,6 +6,7 @@
  * Author: Nitya Saha
  * Author URI: https://profiles.wordpress.org/nityasaha/
  * Text Domain: share-cart-for-woocommerce
+ * Requires plugins: woocommerce
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -14,6 +15,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
     die( esc_html__( "No direct access!", 'share-cart-for-woocommerce' ) );
 }
+
+define( 'SCURL_VERSION', '1.0');
 
 /**
  * Plugin activation hook.
