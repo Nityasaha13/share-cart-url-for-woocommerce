@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Share Cart for WooCommerce
- * Description: Share WooCommerce Cart URL to the Customer.
+ * Description: Share Cart URL for WooCommerce enables customers to share their cart URL directly from the WooCommerce cart page.
  * Version: 1.0
  * Author: Nitya Saha
  * Author URI: https://profiles.wordpress.org/nityasaha/
@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'SCURL_VERSION', '1.0');
+define( 'SCURL_PLUGIN_PATH', plugin_dir_url(__FILE__) );
 
 /**
  * Plugin activation hook.
@@ -60,6 +61,7 @@ if ( ! class_exists( 'SCURL_Main' ) ) {
 
             // Add settings link on the plugins page.
             add_filter( 'plugin_action_links_' . $this->plugin_basename, array( $this, 'insert_view_logs_link' ) );
+            add_filter( 'plugin_row_meta', array( $this, 'addon_plugin_links' ), 10, 2 );
         }
 
         /**
@@ -71,6 +73,15 @@ if ( ! class_exists( 'SCURL_Main' ) ) {
         public function insert_view_logs_link( $links ) {
             $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=share_cart_url' ) ) . '">' . esc_html__( 'Settings', 'share-cart-for-woocommerce' ) . '</a>';
             array_unshift( $links, $settings_link );
+            return $links;
+        }
+
+        public function addon_plugin_links( $links, $file ) {
+            if ( $file === $this->plugin_basename ) {
+                $links[] = __( '<a href="https://buymeacoffee.com/nityasaha">Donate</a>', 'share-cart-for-woocommerce' );
+                $links[] = __( 'Made with Love ❤️', 'share-cart-for-woocommerce' );
+            }
+    
             return $links;
         }
     }

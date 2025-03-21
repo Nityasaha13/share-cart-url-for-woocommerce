@@ -18,7 +18,10 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
         public function init() {
             // Get the button position (hook) from settings. Default to 'woocommerce_before_cart_table'.
             $position = get_option( 'scurl_button_position', 'woocommerce_before_cart_table' );
-            add_action( $position, array( __CLASS__, 'scurl_render_share_cart_interface' ) );
+            
+            if($position !== 'hide'){
+                add_action( $position, array( __CLASS__, 'scurl_render_share_cart_interface' ) );
+            }
             add_shortcode('share_cart_url',  array( __CLASS__, 'scurl_render_share_cart_interface' ) );
 
             add_action( 'woocommerce_load_cart_from_session', array( __CLASS__, 'scurl_apply_shared_cart_session' ), 1 );
@@ -39,9 +42,11 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
         }
 
         public static function scurl_apply_shared_cart_session() {
+
             if ( isset( $_REQUEST['share'] ) ) {
-                $hash = sanitize_file_name( $_REQUEST['share'] );
+                $hash = sanitize_file_name( wp_unslash( $_REQUEST['share'] ) );
                 $file = get_temp_dir() . $hash;
+                
                 if ( file_exists( $file ) ) {
                     $cart = unserialize( file_get_contents( $file ) );
                     foreach ( self::$session_cart_keys as $key ) {
@@ -49,6 +54,7 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
                     }
                 }
             }
+
         }
 
         public static function scurl_render_share_cart_interface() {
@@ -67,17 +73,28 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
         }
 
         public static function scurl_update_cart( $cart_updated ) {
-            if ( isset( $_REQUEST['cart'] ) ) {
+            if ( isset( $_REQUEST['cart'] ) && is_array( $_REQUEST['cart'] ) ) {
                 $cart = WC()->cart->get_cart();
+        
                 foreach ( $_REQUEST['cart'] as $key => $data ) {
+                    $key = sanitize_text_field( $key ); // Sanitize the cart key
+        
                     if ( isset( $data['custom_price'] ) && isset( $cart[ $key ] ) ) {
-                        $cart[ $key ]['scurl_price'] = $data['custom_price'];
+                        $custom_price = wc_format_decimal( $data['custom_price'] ); // Sanitize & validate as decimal
+        
+                        // Ensure the price is a valid number and non-negative
+                        if ( is_numeric( $custom_price ) && $custom_price >= 0 ) {
+                            $cart[ $key ]['scurl_price'] = $custom_price;
+                        }
                     }
                 }
+        
                 WC()->cart->set_cart_contents( $cart );
             }
+        
             return $cart_updated;
         }
+        
 
         public static function scurl_apply_custom_prices( $cart ) {
             $cart_contents = WC()->cart->get_cart();
@@ -90,8 +107,10 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
 
         public static function scurl_scripts_and_styles(){
 
-            wp_enqueue_script('scurl-script', plugin_dir_url(__FILE__) . 'assets/js/scurl.js', array('jquery'), SCURL_VERSION, true);
-            wp_enqueue_style('scurl-style', plugin_dir_url(__FILE__) . 'assets/css/scurl.css', array(), SCURL_VERSION);
+            wp_enqueue_script('scurl-script', SCURL_PLUGIN_PATH . 'assets/js/scurl.js', array('jquery'), SCURL_VERSION, false);
+            wp_localize_script('scurl-script', 'share_cart_ajax', array('ajax_url' => admin_url('admin-ajax.php')));
+
+            wp_enqueue_style('scurl-style', SCURL_PLUGIN_PATH . 'assets/css/scurl.css', array(), SCURL_VERSION);
 
         }
     }
