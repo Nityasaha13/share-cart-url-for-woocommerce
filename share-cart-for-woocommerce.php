@@ -2,11 +2,13 @@
 /**
  * Plugin Name: Share Cart for WooCommerce
  * Description: Share Cart URL for WooCommerce enables customers to share their cart URL directly from the WooCommerce cart page.
- * Version: 1.2
+ * Version: 1.3
  * Author: Nitya Saha
- * Author URI: https://profiles.wordpress.org/nityasaha/
+ * Author URI: https://nitya.codesocials.com
  * Text Domain: share-cart-for-woocommerce
  * Requires plugins: woocommerce
+ * Requires at least: 5.0
+ * Requires PHP: 7.4
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -16,8 +18,44 @@ if ( ! defined( 'ABSPATH' ) ) {
     die( esc_html__( "No direct access!", 'share-cart-for-woocommerce' ) );
 }
 
-define( 'SCURL_VERSION', '1.2');
+define( 'SCURL_VERSION', '1.3');
+define( 'SCURL_PLUGIN_FILE', __FILE__ );
+// Kept for backward compatibility. Despite the name, this is a URL, not a path.
 define( 'SCURL_PLUGIN_PATH', plugin_dir_url(__FILE__) );
+
+/**
+ * Check whether WooCommerce is available.
+ *
+ * Replaces the previous active_plugins scan, which failed when WooCommerce was
+ * network activated on multisite or installed in a non-standard folder.
+ *
+ * @return bool
+ */
+function scurl_is_woocommerce_active() {
+    if ( class_exists( 'WooCommerce' ) ) {
+        return true;
+    }
+
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
+    // is_plugin_active() covers network activated plugins internally.
+    return is_plugin_active( 'woocommerce/woocommerce.php' );
+}
+
+/**
+ * Declare compatibility with WooCommerce features.
+ *
+ * HPOS (custom order tables) is fully supported: this plugin never touches
+ * order storage. Cart/Checkout blocks are intentionally not declared yet,
+ * the block based cart is targeted for a later release.
+ */
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', SCURL_PLUGIN_FILE, true );
+    }
+} );
 
 /**
  * Plugin activation hook.
@@ -26,7 +64,7 @@ define( 'SCURL_PLUGIN_PATH', plugin_dir_url(__FILE__) );
  */
 function scurl_plugin_activation() {
     // Check if WooCommerce is active.
-    if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    if ( ! scurl_is_woocommerce_active() ) {
         deactivate_plugins( plugin_basename( __FILE__ ) );
         wp_die( esc_html__( 'This plugin requires WooCommerce to be installed and active.', 'share-cart-for-woocommerce' ) );
     }
@@ -47,12 +85,12 @@ if ( ! class_exists( 'SCURL_Main' ) ) {
 
         public function init() {
             // Ensure WooCommerce is active before running plugin code.
-            if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+            if ( ! scurl_is_woocommerce_active() ) {
                 return;
-            } else {
-                require_once plugin_dir_path( __FILE__ ) . 'includes/setting.php';
-                require_once plugin_dir_path( __FILE__ ) . 'includes/share-cart-url.php';
             }
+
+            require_once plugin_dir_path( __FILE__ ) . 'includes/setting.php';
+            require_once plugin_dir_path( __FILE__ ) . 'includes/share-cart-url.php';
 
             // Set default option for button position if not already set.
             if ( false === get_option( 'scurl_button_position' ) ) {
