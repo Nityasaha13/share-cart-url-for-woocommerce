@@ -1,0 +1,45 @@
+#scurl_native_share_enabled {
+    position: absolute;
+    opacity: 0;
+}
+
+#scurl_native_share_enabled + label,
+label[for="scurl_native_share_enabled"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 46px;
+    height: 24px;
+    border-radius: 12px;
+    background: #8c8f94;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+label[for="scurl_native_share_enabled"]::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+}
+
+#scurl_native_share_enabled:checked + label,
+label[for="scurl_native_share_enabled"]:has(#scurl_native_share_enabled:checked) {
+    background: #2271b1;
+}
+
+#scurl_native_share_enabled:checked + label::after,
+label[for="scurl_native_share_enabled"]:has(#scurl_native_share_enabled:checked)::after {
+    transform: translateX(22px);
+}
+
+#scurl_native_share_enabled:focus-visible + label,
+label[for="scurl_native_share_enabled"]:has(#scurl_native_share_enabled:focus-visible) {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}

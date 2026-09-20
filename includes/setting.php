@@ -13,7 +13,30 @@ if ( ! class_exists( 'SCURL_Settings' ) ) {
                 add_filter( 'woocommerce_settings_tabs_array', array( $this, 'add_settings_tab' ), 50 );
                 add_action( 'woocommerce_settings_tabs_share_cart_url', array( $this, 'settings_tab_content' ) );
                 add_action( 'woocommerce_update_options_share_cart_url', array( $this, 'update_settings' ) );
+                add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
             }
+        }
+
+        /**
+         * Enqueue styles for the Share Cart settings tab.
+         *
+         * @param string $hook_suffix Current admin page hook suffix.
+         */
+        public function enqueue_admin_styles( $hook_suffix ) {
+            if ( 'woocommerce_page_wc-settings' !== $hook_suffix ) {
+                return;
+            }
+
+            if ( ! isset( $_GET['tab'] ) || 'share_cart_url' !== sanitize_key( wp_unslash( $_GET['tab'] ) ) ) {
+                return;
+            }
+
+            wp_enqueue_style(
+                'scurl-admin-style',
+                SCURL_PLUGIN_PATH . 'assets/css/scurl-admin.css',
+                array(),
+                SCURL_VERSION
+            );
         }
 
         /**
@@ -85,6 +108,15 @@ if ( ! class_exists( 'SCURL_Settings' ) ) {
                     'desc_tip'    => true,
                     'default'     => '',
                     'id'          => 'scurl_button_text'
+                ),
+                'native_share_enabled' => array(
+                    'name'     => esc_html__( 'Native Share Button', 'share-cart-for-woocommerce' ),
+                    'type'     => 'checkbox',
+                    'label'    => esc_html__( 'Enable the native share button beside the copy button.', 'share-cart-for-woocommerce' ),
+                    'desc'     => esc_html__( 'When enabled, the button is shown only in browsers that support native sharing.', 'share-cart-for-woocommerce' ),
+                    'desc_tip' => true,
+                    'default'  => 'no',
+                    'id'       => 'scurl_native_share_enabled'
                 ),
                 'section_end' => array(
                     'type' => 'sectionend',

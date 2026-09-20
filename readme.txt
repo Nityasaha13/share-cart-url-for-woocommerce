@@ -164,6 +164,7 @@ For support, please use the WordPress.org support forum for this plugin. We moni
 
 1. Cart Page with Share Button
 2. Share Cart Settings Tab under WooCommerce settings
+3. Cart Page with generated link and buttons.
 
 == Changelog ==
 
@@ -184,6 +185,7 @@ For support, please use the WordPress.org support forum for this plugin. We moni
 * Improved: button text and all on screen messages are now translatable.
 * Improved: the share button no longer submits the cart form when JavaScript is unavailable.
 * Compatibility with WordPress 7.1 and current WooCommerce releases.
+* Added: native share button for users, with enable and disable option.
 
 = 1.2 =
 * Compatibility with 6.9

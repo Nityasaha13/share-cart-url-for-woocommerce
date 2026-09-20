@@ -39,6 +39,22 @@
     margin: 0;
 }
 
+.scurl-share-row .scurl-copy-btn,
+.scurl-share-row .scurl-native-share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5em;
+    min-height: 2.5em;
+    padding: 0.4em;
+}
+
+.scurl-share-row .dashicons {
+    font-size: 1.2em;
+    width: 1.2em;
+    height: 1.2em;
+}
+
 .scurl-native-share-btn[hidden] {
     display: none;
 }

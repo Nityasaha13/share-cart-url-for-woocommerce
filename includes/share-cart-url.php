@@ -181,6 +181,7 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
 
             self::$instance_count++;
             $is_first = ( 1 === self::$instance_count );
+            $native_share_enabled = 'yes' === get_option( 'scurl_native_share_enabled', 'no' );
 
             ob_start();
             ?>
@@ -192,8 +193,14 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
                     <div class="scurl-share-row">
                         <input type="text" class="scurl-share-input" value="<?php echo esc_attr( $share_url ); ?>" readonly
                             aria-label="<?php esc_attr_e( 'Shared cart link', 'share-cart-for-woocommerce' ); ?>" />
-                        <button type="button" class="button scurl-copy-btn"><?php esc_html_e( 'Copy', 'share-cart-for-woocommerce' ); ?></button>
-                        <button type="button" class="button scurl-native-share-btn" hidden><?php esc_html_e( 'Share', 'share-cart-for-woocommerce' ); ?></button>
+                        <button type="button" class="button scurl-copy-btn" aria-label="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>">
+                            <span class="dashicons dashicons-admin-page" aria-hidden="true"></span>
+                        </button>
+                        <?php if ( $native_share_enabled ) : ?>
+                            <button type="button" class="button scurl-native-share-btn" aria-label="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" hidden>
+                                <span class="dashicons dashicons-share" aria-hidden="true"></span>
+                            </button>
+                        <?php endif; ?>
                     </div>
                     <span class="scurl-share-feedback" role="status" aria-live="polite"></span>
                 </div>
@@ -250,7 +257,8 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
                 ),
             ));
 
-            wp_enqueue_style('scurl-style', SCURL_PLUGIN_PATH . 'assets/css/scurl.css', array(), SCURL_VERSION);
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('scurl-style', SCURL_PLUGIN_PATH . 'assets/css/scurl.css', array('dashicons'), SCURL_VERSION);
         }
     }
 
