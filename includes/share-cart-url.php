@@ -25,6 +25,28 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
          */
         private static $instance_count = 0;
 
+        /**
+         * Whether a classic cart hook already rendered the widget on this
+         * request. The Cart block fallback checks this so a page holding both
+         * the block and the classic cart does not get two copies.
+         *
+         * @var bool
+         */
+        private static $rendered_on_hook = false;
+
+        /**
+         * Positions that sit above the cart. Everything else in the setting
+         * renders below it. Used only by the Cart block fallback, where the
+         * fine grained classic positions have nowhere to attach.
+         *
+         * @var array
+         */
+        private static $positions_above_cart = array(
+            'woocommerce_before_cart_table',
+            'woocommerce_before_cart_contents',
+            'woocommerce_cart_coupon',
+        );
+
         public function __construct() {
             $this->init();
         }
@@ -35,6 +57,9 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
 
             if ( $position !== 'hide' ) {
                 add_action( $position, array( __CLASS__, 'scurl_render_share_cart_interface' ) );
+                // The Cart block does not fire any of the classic cart hooks, so
+                // the widget has to be attached to the block itself there.
+                add_filter( 'render_block', array( __CLASS__, 'scurl_render_in_cart_block' ), 10, 2 );
             }
             add_shortcode( 'share_cart_url', array( __CLASS__, 'scurl_shortcode' ) );
 
@@ -193,14 +218,25 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
                     <div class="scurl-share-row">
                         <input type="text" class="scurl-share-input" value="<?php echo esc_attr( $share_url ); ?>" readonly
                             aria-label="<?php esc_attr_e( 'Shared cart link', 'share-cart-for-woocommerce' ); ?>" />
-                        <button type="button" class="button scurl-copy-btn" aria-label="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>">
-                            <span class="dashicons dashicons-admin-page" aria-hidden="true"></span>
-                        </button>
-                        <?php if ( $native_share_enabled ) : ?>
-                            <button type="button" class="button scurl-native-share-btn" aria-label="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" hidden>
-                                <span class="dashicons dashicons-share" aria-hidden="true"></span>
+                        <span class="scurl-share-actions">
+                            <button type="button" class="scurl-icon-btn scurl-copy-btn" aria-label="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Copy link', 'share-cart-for-woocommerce' ); ?>">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
                             </button>
-                        <?php endif; ?>
+                            <?php if ( $native_share_enabled ) : ?>
+                                <button type="button" class="scurl-icon-btn scurl-native-share-btn" aria-label="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" title="<?php esc_attr_e( 'Share link', 'share-cart-for-woocommerce' ); ?>" hidden>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <path d="M8.59 13.51 15.42 17.49"></path>
+                                        <path d="M15.41 6.51 8.59 10.49"></path>
+                                    </svg>
+                                </button>
+                            <?php endif; ?>
+                        </span>
                     </div>
                     <span class="scurl-share-feedback" role="status" aria-live="polite"></span>
                 </div>
@@ -213,8 +249,59 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
          * Render the widget on a WooCommerce hook.
          */
         public static function scurl_render_share_cart_interface() {
+            $html = self::scurl_get_share_cart_html();
+
+            if ( '' === $html ) {
+                return;
+            }
+
+            self::$rendered_on_hook = true;
+
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in scurl_get_share_cart_html().
-            echo self::scurl_get_share_cart_html();
+            echo $html;
+        }
+
+        /**
+         * Render the widget alongside the WooCommerce Cart block.
+         *
+         * The block cart is a React app. None of the classic cart hooks
+         * (woocommerce_before_cart_table and friends) are fired by it, which is
+         * why the Button Position setting appeared to do nothing on a block
+         * cart while the shortcode kept working.
+         *
+         * The block's server output is only a placeholder skeleton that the
+         * script replaces on hydration, so anything injected inside it is
+         * discarded. The widget is placed around the block instead, above or
+         * below it according to the chosen position.
+         *
+         * @param string $block_content Rendered block HTML.
+         * @param array  $block         Parsed block.
+         * @return string
+         */
+        public static function scurl_render_in_cart_block( $block_content, $block ) {
+            if ( empty( $block['blockName'] ) || 'woocommerce/cart' !== $block['blockName'] ) {
+                return $block_content;
+            }
+
+            if ( self::$rendered_on_hook ) {
+                return $block_content;
+            }
+
+            $html = self::scurl_get_share_cart_html();
+
+            if ( '' === $html ) {
+                return $block_content;
+            }
+
+            self::$rendered_on_hook = true;
+
+            $position = get_option( 'scurl_button_position', 'woocommerce_before_cart_table' );
+
+            if ( in_array( $position, self::$positions_above_cart, true ) ) {
+                return $html . $block_content;
+            }
+
+            return $block_content . $html;
         }
 
         /**
@@ -257,8 +344,7 @@ if ( ! class_exists( 'SCURL_Share_Cart_URL' ) ) {
                 ),
             ));
 
-            wp_enqueue_style('dashicons');
-            wp_enqueue_style('scurl-style', SCURL_PLUGIN_PATH . 'assets/css/scurl.css', array('dashicons'), SCURL_VERSION);
+            wp_enqueue_style('scurl-style', SCURL_PLUGIN_PATH . 'assets/css/scurl.css', array(), SCURL_VERSION);
         }
     }
 
