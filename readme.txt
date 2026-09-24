@@ -4,7 +4,7 @@ Donate link: https://buymeacoffee.com/nityasaha
 Tags: woocommerce, cart, share, shopping cart, share-cart
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.3
+Stable tag: 1.4
 Requires PHP: 7.4
 Requires plugins: woocommerce
 License: GPLv2 or later
@@ -167,6 +167,11 @@ For support, please use the WordPress.org support forum for this plugin. We moni
 3. Cart Page with generated link and buttons.
 
 == Changelog ==
+
+= 1.4 =
+* Added: "Email this cart" button. When enabled in settings, an envelope icon appears beside the share icon and opens a popup where customers enter their email address and an optional message, then receive the cart link by email. Off by default.
+* Added: cart emails use the WooCommerce email template, and the `scurl_email_cart_args` filter can change the subject, heading or body.
+* Security: the emailed link is always built on the server from the visitor's own cart, and sending is limited to 5 emails per visitor per hour (filterable with `scurl_email_rate_limit`).
 
 = 1.3 =
 * Security: removed an unused cart price override code path that allowed the submitted cart form to change product prices. All users should update.
